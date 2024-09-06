@@ -3,7 +3,7 @@ public class Bad2 {
         int a = 1331;
         int b = 1;
         System.out.println("Welcome to \nCS 1331!");
-        int c = a / b;
+        double c = a / b;
         System.out.println("c is equal to: " + c);
     }
 }
