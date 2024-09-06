@@ -24,15 +24,15 @@ public class Calculator {
             case "multiply":
                 System.out.println("Enter two doubles: ");
                 Scanner multi = new Scanner(System.in);
-                int multi_first = multi.nextInt();
-                int multi_second = multi.nextInt();
+                double multi_first = multi.nextDouble();
+                double multi_second = multi.nextDouble();
                 System.out.println("Answer: " + (multi_first * multi_second));
                 break;
             case "divide":
                 System.out.println("Enter two doubles: ");
                 Scanner divide = new Scanner(System.in);
-                int divide_first = divide.nextInt();
-                int divide_second = divide.nextInt();
+                double divide_first = divide.nextDouble();
+                double divide_second = divide.nextDouble();
                 if (divide_second != 0) {
                     System.out.println("Answer: " + (divide_first/divide_second));
                 }
@@ -41,7 +41,19 @@ public class Calculator {
                 break;
             case "alphabetize":
                 System.out.println("Enter two words: ");
-                Scanner integers = new Scanner(System.in);
+                Scanner alpha = new Scanner(System.in);
+                String first = alpha.next();
+                String second = alpha.next();
+                int compare = first.compareTo(second);
+                if (compare == 0) {
+                    System.out.println("Chicken or Egg.");
+                }
+                else if (compare > 1) {
+                    System.out.println(first + " comes before "+second+" alphabetically.");
+                }
+                else
+                    System.out.println(second + " comes before "+first+" alphabetically.");
+
                 break;
             default:
                 System.out.println("Invalid input entered. Terminating...");
