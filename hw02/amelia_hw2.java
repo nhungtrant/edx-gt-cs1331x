@@ -26,7 +26,8 @@ public class Calculator {
                 Scanner multi = new Scanner(System.in);
                 double multi_first = multi.nextDouble();
                 double multi_second = multi.nextDouble();
-                System.out.println("Answer: " + (multi_first * multi_second));
+                double result = multi_first * multi_second;
+                System.out.printf("Answer: "+"result: %.2d\n", result);
                 break;
             case "divide":
                 System.out.println("Enter two doubles: ");
@@ -46,7 +47,7 @@ public class Calculator {
                 String second = alpha.next();
                 int compare = first.compareTo(second);
                 if (compare == 0) {
-                    System.out.println("Chicken or Egg.");
+                    System.out.println("Answer: Chicken or Egg.");
                 }
                 else if (compare > 1) {
                     System.out.println(first + " comes before "+second+" alphabetically.");
