@@ -10,16 +10,24 @@ class HelloWorld {
         Scanner input = new Scanner(System.in); //Initialize scanner object
         int[][] player1 = new int[5][2];
         for (int i = 0; i < 5; i++ ) {
-            System.out.println("Enter ship "+ (i+1)+ " location:");
-            int row = checkValidInput(input);
-            int col = checkValidInput(input);
-            checkDuplicate(row,col,player1);
-            player1[i][0] = row;
-            player1[i][1] = col;
+            boolean check = false;
+            while (!check) {
+                // System.out.println("check1 : "+ check);
+                System.out.println("Enter ship "+ (i+1)+ " location:");
+                int row = checkValidInput(input);
+                int col = checkValidInput(input);
+                if ((row==-1)||(col==-1)) {
+                    System.out.println("fick: ");
+                }
+                // System.out.println("check2: "+ check);
+                check = checkDuplicate(row,col,player1);
+                player1[i][0] = row;
+                player1[i][1] = col;
+            }
         }
         char[][] player1GridMap = new char[5][5];
-        for (int[] row : player1)
-            System.out.println(Arrays.toString(row));
+        for (int[] line : player1)
+            System.out.println(Arrays.toString(line));
     }
     private static void printInvalidInputMessage() {
         System.out.println("Invalid input entered. Terminating...");
@@ -32,17 +40,20 @@ class HelloWorld {
                 return num;
             }
         }
-        input.nextLine();
+        // input.nextLine();
         System.out.println("Invalid coordinates. Choose different coordinates.");
+        input.nextLine();
         return -1;
     }
     
-    private static void checkDuplicate(int row, int col, int[][] matrix_ships) {
+    private static boolean checkDuplicate(int row, int col, int[][] matrix_ships) {
         for (int[] ship: matrix_ships){
             if ((row == ship[0]) && (col == ship[1])){
                 System.out.println("Match ship");
+                return false;
             }
         }
+        return true;
     }
 
     // Use this method to print game boards to the console.
