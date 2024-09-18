@@ -12,22 +12,29 @@ class HelloWorld {
         for (int i = 0; i < 5; i++ ) {
             boolean check = false;
             while (!check) {
-                // System.out.println("check1 : "+ check);
                 System.out.println("Enter ship "+ (i+1)+ " location:");
                 int row = checkValidInput(input);
                 int col = checkValidInput(input);
-                if ((row==-1)||(col==-1)) {
-                    System.out.println("fick: ");
-                }
-                // System.out.println("check2: "+ check);
                 check = checkDuplicate(row,col,player1);
                 player1[i][0] = row;
                 player1[i][1] = col;
             }
         }
         char[][] player1GridMap = new char[5][5];
-        for (int[] line : player1)
-            System.out.println(Arrays.toString(line));
+        
+        for (char[] map : player1GridMap) {
+            for (char item : map) {
+                item = '-';
+            }
+        }
+        for (int[] ship : player1) {
+            // System.out.println(Arrays.toString(line));
+            player1GridMap[ship[0]][ship[1]] = '@';
+        }
+        
+        printBattleShip(player1GridMap);
+        
+        char[][] player1GridMap = new char[5][5];
     }
     private static void printInvalidInputMessage() {
         System.out.println("Invalid input entered. Terminating...");
@@ -36,7 +43,7 @@ class HelloWorld {
     private static int checkValidInput(Scanner input) {
         if (input.hasNextInt()) {
             int num = input.nextInt();
-            if (num>0 && num<6) {
+            if (num>-1 && num<5) {
                 return num;
             }
         }
@@ -47,9 +54,12 @@ class HelloWorld {
     }
     
     private static boolean checkDuplicate(int row, int col, int[][] matrix_ships) {
+        if ((row==-1)||(col==-1)){
+                return false;
+            }
         for (int[] ship: matrix_ships){
-            if ((row == ship[0]) && (col == ship[1])){
-                System.out.println("Match ship");
+            if (((row==-1)||(col==-1))||(row == ship[0]) && (col == ship[1])){
+                System.out.println("You already have a ship there. Choose different coordinates.");
                 return false;
             }
         }
@@ -57,7 +67,7 @@ class HelloWorld {
     }
 
     // Use this method to print game boards to the console.
-	private static void printBattleShip(int[][] player) {
+	private static void printBattleShip(char[][] player) {
 		System.out.print("  ");
 		for (int row = -1; row < 5; row++) {
 			if (row > -1) {
