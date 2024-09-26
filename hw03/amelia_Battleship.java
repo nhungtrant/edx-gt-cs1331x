@@ -16,8 +16,11 @@ class HelloWorld {
         boolean destroy = false;
         while (!destroy) {
             int shipDestroyed = 0;
-            // funtion to take in input and check
-            if (shipDestroyed = 5) {
+            int[][] player = new int[25][2];
+                    
+            int[] player1_TagetHistory = TargetCollector(input, player1_Position);
+            
+            if (shipDestroyed == 5) {
                 destroy = true;
             }
         }
@@ -25,18 +28,18 @@ class HelloWorld {
         char[][] player2GridMap = new char[5][5];
     }
     
-    private static int[][] TargetCollector(Scanner input, int[][] shipPosition) {
-        int[][] player = new int[25][2];
+    private static int[] TargetCollector(Scanner input, int[][] shipPosition) {
         boolean check = false;
+        int[] cordinate = null;
         while (!check) {
             System.out.println("Player 1, enter hit row/column:");
             int row = checkValidInput(input);
             int col = checkValidInput(input);
-            check = checkDuplicate(row,col,player);
-            player[i][0] = row - 1;
-            player[i][1] = col - 1;
+            check = checkDuplicate(row,col,shipPosition);
+            System.out.println("check: "+ check);
+            cordinate = new int[]{row - 1, col - 1};
         }
-        return player;
+        return cordinate;
     }
     
     private static int[][] ShipPositionCollector(Scanner input) {
