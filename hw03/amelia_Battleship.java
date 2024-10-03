@@ -28,18 +28,46 @@ class HelloWorld {
         char[][] player2GridMap = new char[5][5];
     }
     
-    private static int[] TargetCollector(Scanner input, int[][] shipPosition) {
+    private static int CheckHitTarget(int shipDestroyed, int[][] player_TagetHistory, int[][] ShipPosition)  {
+        for (int[] ship : ShipPosition) {
+            if ((ship[0] == player_TagetHistory[-1][0]) && (ship[1] == player_TagetHistory[-1][1])) {
+                System.out.println("Hit!");
+                shipDestroyed++;
+            }
+            else
+                System.out.println("Miss :(");
+        }
+        return shipDestroyed;
+    }
+    
+    private static int[] TargetCollector(Scanner input, int[][] TargetHistory) {
         boolean check = false;
         int[] cordinate = null;
         while (!check) {
             System.out.println("Player 1, enter hit row/column:");
             int row = checkValidInput(input);
             int col = checkValidInput(input);
-            check = checkDuplicate(row,col,shipPosition);
+            check = checkDuplicateTarget(row,col,TargetHistory);
             System.out.println("check: "+ check);
             cordinate = new int[]{row - 1, col - 1};
+            // for (int[] ship: TargetHistory){
+            //     if ((ship[0]-1 == ) && (col == ship[1]+1)){
+            //         System.out.println("You already have a ship there. Choose different coordinates.");
+            //         return false;
+            //     }
+            // }
         }
         return cordinate;
+    }
+    
+    private static boolean checkDuplicateTarget(int row, int col, int[][] TargetHistory) {
+        for (int[] ship: TargetHistory){
+            if ((row == ship[0]+1) && (col == ship[1]+1)){
+                System.out.println("You already have a ship there. Choose different coordinates.");
+                return false;
+            }
+        }
+        return true;
     }
     
     private static int[][] ShipPositionCollector(Scanner input) {
@@ -93,7 +121,7 @@ class HelloWorld {
                 return false;
             }
         for (int[] ship: matrix_ships){
-            if (((row==-1)||(col==-1))||(row == ship[0]) && (col == ship[1])){
+            if ((row == ship[0]) && (col == ship[1])){
                 System.out.println("You already have a ship there. Choose different coordinates.");
                 return false;
             }
