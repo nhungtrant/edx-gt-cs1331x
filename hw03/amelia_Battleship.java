@@ -8,7 +8,8 @@ class HelloWorld {
         System.out.println("PLAYER 1, ENTER YOUR SHIPS' COORDINATES.");
         Scanner input = new Scanner(System.in); //Initialize scanner object
         
-        int[][] player1_Position = ShipPositionCollector(input);
+        int[][] player_matrix = createMatrix(5);
+        int[][] player1_Position = ShipPositionCollector(input, player_matrix);
         char[][] player1GridMap = ShipGridMap(player1_Position);
         printBattleShip(player1GridMap);
         
@@ -40,50 +41,41 @@ class HelloWorld {
         return shipDestroyed;
     }
     
-    private static int[] TargetCollector(Scanner input, int[][] TargetHistory) {
+    private static int[][] TargetCollector(Scanner input, int[][] TargetHistory) {
         boolean check = false;
-        int[] cordinate = null;
         while (!check) {
             System.out.println("Player 1, enter hit row/column:");
             int row = checkValidInput(input);
             int col = checkValidInput(input);
             check = checkDuplicateTarget(row,col,TargetHistory);
-            System.out.println("check: "+ check);
-            cordinate = new int[]{row - 1, col - 1};
-            // for (int[] ship: TargetHistory){
-            //     if ((ship[0]-1 == ) && (col == ship[1]+1)){
-            //         System.out.println("You already have a ship there. Choose different coordinates.");
-            //         return false;
-            //     }
-            // }
+
         }
-        return cordinate;
     }
     
-    private static boolean checkDuplicateTarget(int row, int col, int[][] TargetHistory) {
-        for (int[] ship: TargetHistory){
-            if ((row == ship[0]+1) && (col == ship[1]+1)){
-                System.out.println("You already have a ship there. Choose different coordinates.");
-                return false;
-            }
+
+    
+    private static int[][] createMatrix(int numRow) {
+        int[][] matrix = new int[numRow][2];
+        for (int[] row : matrix) {
+            row[0] = -1;
+            row[1] = -1;
         }
-        return true;
+        return matrix;
     }
     
-    private static int[][] ShipPositionCollector(Scanner input) {
-        int[][] player = new int[5][2];
+    private static int[][] ShipPositionCollector(Scanner input, int[][] matrix) {
         for (int i = 0; i < 5; i++ ) {
             boolean check = false;
             while (!check) {
                 System.out.println("Enter ship "+ (i+1)+ " location:");
                 int row = checkValidInput(input);
                 int col = checkValidInput(input);
-                check = checkDuplicate(row,col,player);
-                player[i][0] = row - 1;
-                player[i][1] = col - 1;
+                check = checkDuplicate(row,col,matrix);
+                matrix[i][0] = row;
+                matrix[i][1] = col;
             }
         }
-        return player;
+        return matrix;
     }
     
     private static char[][] ShipGridMap(int[][] ShipPosition) {
@@ -107,7 +99,7 @@ class HelloWorld {
     private static int checkValidInput(Scanner input) {
         if (input.hasNextInt()) {
             int num = input.nextInt();
-            if (num>0 && num<6) {
+            if (num>-1 && num<5) {
                 return num;
             }
         }
