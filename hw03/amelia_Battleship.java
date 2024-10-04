@@ -1,6 +1,7 @@
 // Online Java Compiler
 // Use this editor to write, compile and run your Java code online
 import java.util.Scanner;
+import java.util.Arrays; //remove?
 
 class HelloWorld {
     public static void main(String[] args) {
@@ -19,34 +20,59 @@ class HelloWorld {
         while (!destroy) {
             System.out.println("Start collecting");        
             player1_TagetHistory = TargetCollector(input, player1_TagetHistory);
+            
+            // for (int[] row : player1_TagetHistory)
+            //     System.out.println(Arrays.toString(row));
+            
             shipDestroyed = CheckHitTarget(shipDestroyed, player1_TagetHistory, player1_Position);
+            char[][] player1_Target_GridMap = TargetGridMap(player1_TagetHistory);
+            printBattleShip(player1_Target_GridMap);
             if (shipDestroyed == 5) {
+                System.out.println("PLAYER 1 WINS! YOU SUNK ALL OF YOUR OPPONENTS SHIPS!");  
                 destroy = true;
             }
         }
-        
-        char[][] player2GridMap = new char[5][5];
     }
+    
+    private static char[][] TargetGridMap(int[][] TargetHistory) {
+        char[][] playerGridMap = new char[5][5];
+        
+        for (char[] map : playerGridMap) {
+            for (char item : map) {
+                item = '-';
+            }
+        }
+        for (int row_i=1; row_i<TargetHistory.length; row_i++) {
+            for (int col_i=0; col_i<TargetHistory[row_i].length; col_i++) {
+                playerGridMap[TargetHistory[row_i][0]][TargetHistory[row_i][1]] = 'O';
+                }   
+            }
+        return playerGridMap;
+    }
+    
     
     private static int CheckHitTarget(int shipDestroyed, int[][] player_TagetHistory, int[][] ShipPosition)  {
         int row = player_TagetHistory[player_TagetHistory.length - 1][0];
         int col = player_TagetHistory[player_TagetHistory.length - 1][1];
-        System.out.println("Row Col: " + row +" "+ col);
+        int hit = 0;
         for (int[] ship : ShipPosition) {
-            System.out.println("Ship: " + ship[0] +" "+ ship[1]);
             if ((ship[0] == row) && (ship[1] == col)) {
-                System.out.println("Hit!");
+                hit = 1;
                 shipDestroyed++;
             }
-            else
-                System.out.println("Miss :(");
         }
+        if (hit==1) {
+            System.out.println("PLAYER 1 HIT PLAYER 2s SHIP!");
+        }
+        else 
+            System.out.println("PLAYER 2 MISSED!");
+            
         return shipDestroyed;
     }
     
     private static int[][] TargetCollector(Scanner input, int[][] TargetHistory) {
         boolean check = false;
-        int[][] updatedTargetHistory = new int [TargetHistory.length][2];
+        int[][] updatedTargetHistory = new int [TargetHistory.length + 1][2];
         while (!check) {
             System.out.println("Player 1, enter hit row/column:");
             int row = checkValidInput(input);
@@ -63,15 +89,21 @@ class HelloWorld {
         return updatedTargetHistory;
     }
     
-    private static boolean checkTargetDuplicate(int row, int col, int[][] matrix_ships) {
-        for (int row=1; row<TargetHistory.length; row++) {
-            for (int col=0; col<TargetHistory[row].length; col++) {
-            if ((row == ship[0]) && (col == ship[1])){
-                System.out.println("You already have a ship there. Choose different coordinates.");
-                return false;
-            }
+    private static boolean checkTargetDuplicate(int row, int col, int[][] TargetHistory) {
+        if (TargetHistory.length < 2) {
+            return true;
         }
-        return true;
+        else {
+            for (int row_i=1; row_i<TargetHistory.length; row_i++) {
+                for (int col_i=0; col_i<TargetHistory[row_i].length; col_i++) {
+                    if ((row == TargetHistory[row_i][0]) && (col == TargetHistory[row_i][1])){
+                        System.out.println("You already have a ship there. Choose different coordinates.");
+                        return false;
+                    }   
+                }
+            }
+            return true;
+        }
     }
     
     private static int[][] createMatrix(int numRow) {
