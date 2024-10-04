@@ -13,14 +13,13 @@ class HelloWorld {
         char[][] player1GridMap = ShipGridMap(player1_Position);
         printBattleShip(player1GridMap);
         
-        
+        int[][] player1_TagetHistory = new int[1][2];
         boolean destroy = false;
+        int shipDestroyed = 0;
         while (!destroy) {
-            int shipDestroyed = 0;
-            int[][] player = new int[25][2];
-                    
-            int[] player1_TagetHistory = TargetCollector(input, player1_Position);
-            
+            System.out.println("Start collecting");        
+            player1_TagetHistory = TargetCollector(input, player1_TagetHistory);
+            shipDestroyed = CheckHitTarget(shipDestroyed, player1_TagetHistory, player1_Position);
             if (shipDestroyed == 5) {
                 destroy = true;
             }
@@ -30,8 +29,12 @@ class HelloWorld {
     }
     
     private static int CheckHitTarget(int shipDestroyed, int[][] player_TagetHistory, int[][] ShipPosition)  {
+        int row = player_TagetHistory[player_TagetHistory.length - 1][0];
+        int col = player_TagetHistory[player_TagetHistory.length - 1][1];
+        System.out.println("Row Col: " + row +" "+ col);
         for (int[] ship : ShipPosition) {
-            if ((ship[0] == player_TagetHistory[-1][0]) && (ship[1] == player_TagetHistory[-1][1])) {
+            System.out.println("Ship: " + ship[0] +" "+ ship[1]);
+            if ((ship[0] == row) && (ship[1] == col)) {
                 System.out.println("Hit!");
                 shipDestroyed++;
             }
@@ -43,16 +46,33 @@ class HelloWorld {
     
     private static int[][] TargetCollector(Scanner input, int[][] TargetHistory) {
         boolean check = false;
+        int[][] updatedTargetHistory = new int [TargetHistory.length][2];
         while (!check) {
             System.out.println("Player 1, enter hit row/column:");
             int row = checkValidInput(input);
             int col = checkValidInput(input);
-            check = checkDuplicateTarget(row,col,TargetHistory);
-
+            check = checkTargetDuplicate(row,col,TargetHistory);
+            updatedTargetHistory[updatedTargetHistory.length-1][0] = row;
+            updatedTargetHistory[updatedTargetHistory.length-1][1] = col;
         }
+        for (int row=0; row<TargetHistory.length; row++) {
+            for (int col=0; col<TargetHistory[row].length; col++) {
+                updatedTargetHistory[row][col] = TargetHistory[row][col];
+            }
+        }
+        return updatedTargetHistory;
     }
     
-
+    private static boolean checkTargetDuplicate(int row, int col, int[][] matrix_ships) {
+        for (int row=1; row<TargetHistory.length; row++) {
+            for (int col=0; col<TargetHistory[row].length; col++) {
+            if ((row == ship[0]) && (col == ship[1])){
+                System.out.println("You already have a ship there. Choose different coordinates.");
+                return false;
+            }
+        }
+        return true;
+    }
     
     private static int[][] createMatrix(int numRow) {
         int[][] matrix = new int[numRow][2];
