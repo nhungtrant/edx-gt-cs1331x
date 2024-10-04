@@ -6,29 +6,47 @@ import java.util.Arrays; //remove?
 class HelloWorld {
     public static void main(String[] args) {
         System.out.println("Welcome to Battleship!");
-        System.out.println("PLAYER 1, ENTER YOUR SHIPS' COORDINATES.");
         Scanner input = new Scanner(System.in); //Initialize scanner object
+        System.out.println("PLAYER 1, ENTER YOUR SHIPS' COORDINATES.");
         
-        int[][] player_matrix = createMatrix(5);
-        int[][] player1_Position = ShipPositionCollector(input, player_matrix);
+        int[][] player1Matrix = createMatrix(5);
+        int[][] player2Matrix = createMatrix(5);
+        
+        int[][] player1_Position =ShipPositionCollector(input,player1Matrix);
         char[][] player1GridMap = ShipGridMap(player1_Position);
         printBattleShip(player1GridMap);
         
+        System.out.println("PLAYER 2, ENTER YOUR SHIPS' COORDINATES.");
+        int[][] player2_Position=ShipPositionCollector(input, player2Matrix);
+        char[][] player2GridMap = ShipGridMap(player2_Position);
+        printBattleShip(player2GridMap);
+        
         int[][] player1_TagetHistory = new int[1][2];
+        int[][] player2_TagetHistory = new int[1][2];
         boolean destroy = false;
-        int shipDestroyed = 0;
+        int ship1Destroyed = 0;
+        int ship2Destroyed = 0;
         while (!destroy) {
-            System.out.println("Start collecting");        
-            player1_TagetHistory = TargetCollector(input, player1_TagetHistory);
-            
+            player1_TagetHistory = TargetCollector(input, player1_TagetHistory, 1);
             // for (int[] row : player1_TagetHistory)
             //     System.out.println(Arrays.toString(row));
-            
-            shipDestroyed = CheckHitTarget(shipDestroyed, player1_TagetHistory, player1_Position);
+            ship1Destroyed = CheckHitTarget(ship1Destroyed, player1_TagetHistory, player2_Position, 1, 2);
             char[][] player1_Target_GridMap = TargetGridMap(player1_TagetHistory, player1_Position);
             printBattleShip(player1_Target_GridMap);
-            if (shipDestroyed == 5) {
+            
+            player2_TagetHistory = TargetCollector(input, player2_TagetHistory, 2);
+            ship2Destroyed = CheckHitTarget(ship2Destroyed, player2_TagetHistory, player1_Position, 2, 1);
+            char[][] player2_Target_GridMap = TargetGridMap(player2_TagetHistory, player2_Position);
+            printBattleShip(player2_Target_GridMap);
+            
+            
+            if (ship1Destroyed == 5) {
                 System.out.println("PLAYER 1 WINS! YOU SUNK ALL OF YOUR OPPONENTS SHIPS!");  
+                destroy = true;
+            }
+            
+            if (ship2Destroyed == 5) {
+                System.out.println("PLAYER 2 WINS! YOU SUNK ALL OF YOUR OPPONENTS SHIPS!");  
                 destroy = true;
             }
         }
@@ -56,7 +74,7 @@ class HelloWorld {
         return playerGridMap;
     }
     
-    private static int CheckHitTarget(int shipDestroyed, int[][] player_TagetHistory, int[][] ShipPosition)  {
+    private static int CheckHitTarget(int shipDestroyed, int[][] player_TagetHistory, int[][] ShipPosition, int num_shot, int numGotShot)  {
         int row = player_TagetHistory[player_TagetHistory.length - 1][0];
         int col = player_TagetHistory[player_TagetHistory.length - 1][1];
         int hit = 0;
@@ -67,19 +85,19 @@ class HelloWorld {
             }
         }
         if (hit==1) {
-            System.out.println("PLAYER 1 HIT PLAYER 2s SHIP!");
+            System.out.println("PLAYER "+ num_shot+ " HIT PLAYER "+ numGotShot+ "s SHIP!");
         }
         else 
-            System.out.println("PLAYER 2 MISSED!");
+            System.out.println("PLAYER "+ num_shot+ " MISSED!");
             
         return shipDestroyed;
     }
     
-    private static int[][] TargetCollector(Scanner input, int[][] TargetHistory) {
+    private static int[][] TargetCollector(Scanner input, int[][] TargetHistory, int num) {
         boolean check = false;
         int[][] updatedTargetHistory = new int [TargetHistory.length + 1][2];
         while (!check) {
-            System.out.println("Player 1, enter hit row/column:");
+            System.out.println("Player "+ num+ " enter hit row/column:");
             int row = checkValidInput(input);
             int col = checkValidInput(input);
             check = checkTargetDuplicate(row,col,TargetHistory);
@@ -130,8 +148,11 @@ class HelloWorld {
                 int row = checkValidInput(input);
                 int col = checkValidInput(input);
                 check = checkDuplicate(row,col,matrix);
-                matrix[i][0] = row;
-                matrix[i][1] = col;
+                if (row!=-1 && col!=-1)
+                {
+                    matrix[i][0] = row;
+                    matrix[i][1] = col;
+                }
             }
         }
         return matrix;
@@ -162,13 +183,12 @@ class HelloWorld {
                 return num;
             }
         }
-        input.nextLine();
-        System.out.println("Invalid coordinates. Choose different coordinates.");
         return -1;
     }
     
     private static boolean checkDuplicate(int row, int col, int[][] matrix_ships) {
         if ((row==-1)||(col==-1)){
+                System.out.println("Invalid coordinates. Choose different coordinates.");
                 return false;
             }
         for (int[] ship: matrix_ships){
