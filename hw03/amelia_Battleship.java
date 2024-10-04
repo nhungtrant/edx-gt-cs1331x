@@ -25,7 +25,7 @@ class HelloWorld {
             //     System.out.println(Arrays.toString(row));
             
             shipDestroyed = CheckHitTarget(shipDestroyed, player1_TagetHistory, player1_Position);
-            char[][] player1_Target_GridMap = TargetGridMap(player1_TagetHistory);
+            char[][] player1_Target_GridMap = TargetGridMap(player1_TagetHistory, player1_Position);
             printBattleShip(player1_Target_GridMap);
             if (shipDestroyed == 5) {
                 System.out.println("PLAYER 1 WINS! YOU SUNK ALL OF YOUR OPPONENTS SHIPS!");  
@@ -34,22 +34,27 @@ class HelloWorld {
         }
     }
     
-    private static char[][] TargetGridMap(int[][] TargetHistory) {
+    private static char[][] TargetGridMap(int[][] TargetHistory, int[][] shipPosition) {
         char[][] playerGridMap = new char[5][5];
-        
         for (char[] map : playerGridMap) {
             for (char item : map) {
                 item = '-';
             }
         }
+        
         for (int row_i=1; row_i<TargetHistory.length; row_i++) {
             for (int col_i=0; col_i<TargetHistory[row_i].length; col_i++) {
                 playerGridMap[TargetHistory[row_i][0]][TargetHistory[row_i][1]] = 'O';
-                }   
-            }
+                for (int[] ship : shipPosition) {
+                    if (TargetHistory[row_i][0]==ship[0] && TargetHistory[row_i][0]==ship[1]) {
+                        playerGridMap[TargetHistory[row_i][0]][TargetHistory[row_i][1]] = 'X';
+                        
+                    }
+                }
+            }  
+        }
         return playerGridMap;
     }
-    
     
     private static int CheckHitTarget(int shipDestroyed, int[][] player_TagetHistory, int[][] ShipPosition)  {
         int row = player_TagetHistory[player_TagetHistory.length - 1][0];
@@ -78,8 +83,10 @@ class HelloWorld {
             int row = checkValidInput(input);
             int col = checkValidInput(input);
             check = checkTargetDuplicate(row,col,TargetHistory);
-            updatedTargetHistory[updatedTargetHistory.length-1][0] = row;
-            updatedTargetHistory[updatedTargetHistory.length-1][1] = col;
+            if (row!= -1 && col!= -1) {
+                updatedTargetHistory[updatedTargetHistory.length-1][0] = row;
+                updatedTargetHistory[updatedTargetHistory.length-1][1] = col;
+            }
         }
         for (int row=0; row<TargetHistory.length; row++) {
             for (int col=0; col<TargetHistory[row].length; col++) {
