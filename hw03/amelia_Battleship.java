@@ -3,7 +3,7 @@
 import java.util.Scanner;
 import java.util.Arrays; //remove?
 
-class HelloWorld {
+class Main {
     public static void main(String[] args) {
         System.out.println("Welcome to Battleship!");
         Scanner input = new Scanner(System.in); //Initialize scanner object
@@ -71,6 +71,7 @@ class HelloWorld {
                 for (int[] ship : shipPosition) {
                     if (TargetHistory[row_i][0]==ship[0] && TargetHistory[row_i][0]==ship[1]) {
                         playerGridMap[TargetHistory[row_i][0]][TargetHistory[row_i][1]] = 'X';
+                        break;
                         
                     }
                 }
