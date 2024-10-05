@@ -31,12 +31,12 @@ class HelloWorld {
             // for (int[] row : player1_TagetHistory)
             //     System.out.println(Arrays.toString(row));
             ship1Destroyed = CheckHitTarget(ship1Destroyed, player1_TagetHistory, player2_Position, 1, 2);
-            char[][] player1_Target_GridMap = TargetGridMap(player1_TagetHistory, player1_Position);
+            char[][] player1_Target_GridMap = TargetGridMap(player1_TagetHistory, player2_Position);
             printBattleShip(player1_Target_GridMap);
             
             player2_TagetHistory = TargetCollector(input, player2_TagetHistory, 2);
             ship2Destroyed = CheckHitTarget(ship2Destroyed, player2_TagetHistory, player1_Position, 2, 1);
-            char[][] player2_Target_GridMap = TargetGridMap(player2_TagetHistory, player2_Position);
+            char[][] player2_Target_GridMap = TargetGridMap(player2_TagetHistory, player1_Position);
             printBattleShip(player2_Target_GridMap);
             
             
@@ -59,7 +59,12 @@ class HelloWorld {
                 item = '-';
             }
         }
-        
+        // System.out.println("Target history: ");
+        // for (int[] row : TargetHistory)
+        //     System.out.println(Arrays.toString(row));
+        // System.out.println("Ship Position: ");
+        // for (int[] row : shipPosition)
+        //     System.out.println(Arrays.toString(row));
         for (int row_i=1; row_i<TargetHistory.length; row_i++) {
             for (int col_i=0; col_i<TargetHistory[row_i].length; col_i++) {
                 playerGridMap[TargetHistory[row_i][0]][TargetHistory[row_i][1]] = 'O';
@@ -126,7 +131,7 @@ class HelloWorld {
             for (int row_i=1; row_i<TargetHistory.length; row_i++) {
                 for (int col_i=0; col_i<TargetHistory[row_i].length; col_i++) {
                     if ((row == TargetHistory[row_i][0]) && (col == TargetHistory[row_i][1])){
-                        System.out.println("You already have a ship there. Choose different coordinates.");
+                        System.out.println("You already fired on this spot. Choose different coordinates.");
                         return false;
                     }   
                 }
