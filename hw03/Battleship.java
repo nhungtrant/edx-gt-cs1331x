@@ -1,221 +1,99 @@
-// Online Java Compiler
-// Use this editor to write, compile and run your Java code online
 import java.util.Scanner;
-import java.util.Arrays; //remove?
 
-class HelloWorld {
+public class Battleship {
+    private static final int NUM_ROWS = 10;
+    private static final int NUM_COLS = 10;
+    private static final int NUM_SHIPS = 5;
+
     public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        char[][][] map = new char[2][NUM_ROWS][NUM_COLS], fireMap = new char[2][NUM_ROWS][NUM_COLS];
+        for (int i = 0; i < 2; i++) for (int j = 0; j < NUM_ROWS; j++) for (int k = 0; k < NUM_COLS; k++)
+            map[i][j][k] = fireMap[i][j][k] = '-';
+
         System.out.println("Welcome to Battleship!");
-        Scanner input = new Scanner(System.in); //Initialize scanner object
-        System.out.println("PLAYER 1, ENTER YOUR SHIPS' COORDINATES.");
-        
-        int[][] player1Matrix = createMatrix(5);
-        int[][] player2Matrix = createMatrix(5);
-        
-        int[][] player1_Position =ShipPositionCollector(input,player1Matrix);
-        char[][] player1GridMap = ShipGridMap(player1_Position);
-        printBattleShip(player1GridMap);
-        
-        System.out.println("PLAYER 2, ENTER YOUR SHIPS' COORDINATES.");
-        int[][] player2_Position=ShipPositionCollector(input, player2Matrix);
-        char[][] player2GridMap = ShipGridMap(player2_Position);
-        printBattleShip(player2GridMap);
-        
-        int[][] player1_TagetHistory = new int[1][2];
-        int[][] player2_TagetHistory = new int[1][2];
-        boolean destroy = false;
-        int ship1Destroyed = 0;
-        int ship2Destroyed = 0;
-        while (!destroy) {
-            player1_TagetHistory = TargetCollector(input, player1_TagetHistory, 1);
-            // for (int[] row : player1_TagetHistory)
-            //     System.out.println(Arrays.toString(row));
-            ship1Destroyed = CheckHitTarget(ship1Destroyed, player1_TagetHistory, player2_Position, 1, 2);
-            char[][] player1_Target_GridMap = TargetGridMap(player1_TagetHistory, player1_Position);
-            printBattleShip(player1_Target_GridMap);
-            
-            player2_TagetHistory = TargetCollector(input, player2_TagetHistory, 2);
-            ship2Destroyed = CheckHitTarget(ship2Destroyed, player2_TagetHistory, player1_Position, 2, 1);
-            char[][] player2_Target_GridMap = TargetGridMap(player2_TagetHistory, player2_Position);
-            printBattleShip(player2_Target_GridMap);
-            
-            
-            if (ship1Destroyed == 5) {
-                System.out.println("PLAYER 1 WINS! YOU SUNK ALL OF YOUR OPPONENTS SHIPS!");  
-                destroy = true;
-            }
-            
-            if (ship2Destroyed == 5) {
-                System.out.println("PLAYER 2 WINS! YOU SUNK ALL OF YOUR OPPONENTS SHIPS!");  
-                destroy = true;
-            }
+        int p = 0;
+        do {
+            System.out.printf("\nPLAYER %d, ENTER YOUR SHIPS’ COORDINATES.\n", p % 2 + 1);
+            printBattleShip(getInitPos(input, p % 2, 1, map));
+            p++;
+        } while (p < 2);
+
+        int[] shipsLeft = {NUM_SHIPS, NUM_SHIPS};
+        while (shipsLeft[0] > 0 && shipsLeft[1] > 0) {
+            getFirePos(input, p % 2, map, fireMap, shipsLeft);
+            printBattleShip(fireMap[p % 2]);
+            p++;
+        }
+
+        System.out.printf("PLAYER %d WINS! YOU SUNK ALL OF YOUR OPPONENT’S SHIPS!\n\n",
+                shipsLeft[0] > shipsLeft[1] ? 1 : 2);
+        System.out.println("Final Boards:");
+        for (int i = 0; i < 2; i++) {
+            System.out.println();
+            printBattleShip(map[i]);
         }
     }
-    
-    private static char[][] TargetGridMap(int[][] TargetHistory, int[][] shipPosition) {
-        char[][] playerGridMap = new char[5][5];
-        for (char[] map : playerGridMap) {
-            for (char item : map) {
-                item = '-';
-            }
-        }
-        
-        for (int row_i=1; row_i<TargetHistory.length; row_i++) {
-            for (int col_i=0; col_i<TargetHistory[row_i].length; col_i++) {
-                playerGridMap[TargetHistory[row_i][0]][TargetHistory[row_i][1]] = 'O';
-                for (int[] ship : shipPosition) {
-                    if (TargetHistory[row_i][0]==ship[0] && TargetHistory[row_i][0]==ship[1]) {
-                        playerGridMap[TargetHistory[row_i][0]][TargetHistory[row_i][1]] = 'X';
-                        
-                    }
+
+    private static char[][] getInitPos(Scanner input, int player, int location, char[][][] map) {
+        while (location < NUM_SHIPS + 1) {
+            try {
+                System.out.printf("Enter ship %d location:\n", location);
+                String[] tmp = input.nextLine().split(" ");
+                int r = Integer.parseInt(tmp[0]), c = Integer.parseInt(tmp[1]);
+                if (map[player % 2][r][c] == '-') {
+                    map[player % 2][r][c] = '@';
+                    location++;
+                } else if (map[player % 2][r][c] == '@') {
+                    System.out.println("You already have a ship there. Choose different coordinates.");
                 }
-            }  
-        }
-        return playerGridMap;
-    }
-    
-    private static int CheckHitTarget(int shipDestroyed, int[][] player_TagetHistory, int[][] ShipPosition, int num_shot, int numGotShot)  {
-        int row = player_TagetHistory[player_TagetHistory.length - 1][0];
-        int col = player_TagetHistory[player_TagetHistory.length - 1][1];
-        int hit = 0;
-        for (int[] ship : ShipPosition) {
-            if ((ship[0] == row) && (ship[1] == col)) {
-                hit = 1;
-                shipDestroyed++;
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                System.out.println("Invalid coordinates. Choose different coordinates.");
             }
         }
-        if (hit==1) {
-            System.out.println("PLAYER "+ num_shot+ " HIT PLAYER "+ numGotShot+ "s SHIP!");
-        }
-        else 
-            System.out.println("PLAYER "+ num_shot+ " MISSED!");
-            
-        return shipDestroyed;
+        return map[player % 2];
     }
-    
-    private static int[][] TargetCollector(Scanner input, int[][] TargetHistory, int num) {
-        boolean check = false;
-        int[][] updatedTargetHistory = new int [TargetHistory.length + 1][2];
-        while (!check) {
-            System.out.println("Player "+ num+ " enter hit row/column:");
-            int row = checkValidInput(input);
-            int col = checkValidInput(input);
-            check = checkTargetDuplicate(row,col,TargetHistory);
-            if (row!= -1 && col!= -1) {
-                updatedTargetHistory[updatedTargetHistory.length-1][0] = row;
-                updatedTargetHistory[updatedTargetHistory.length-1][1] = col;
-            }
-        }
-        for (int row=0; row<TargetHistory.length; row++) {
-            for (int col=0; col<TargetHistory[row].length; col++) {
-                updatedTargetHistory[row][col] = TargetHistory[row][col];
-            }
-        }
-        return updatedTargetHistory;
-    }
-    
-    private static boolean checkTargetDuplicate(int row, int col, int[][] TargetHistory) {
-        if (TargetHistory.length < 2) {
-            return true;
-        }
-        else {
-            for (int row_i=1; row_i<TargetHistory.length; row_i++) {
-                for (int col_i=0; col_i<TargetHistory[row_i].length; col_i++) {
-                    if ((row == TargetHistory[row_i][0]) && (col == TargetHistory[row_i][1])){
-                        System.out.println("You already have a ship there. Choose different coordinates.");
-                        return false;
-                    }   
+
+    private static void getFirePos(Scanner i, int p, char[][][] m, char[][][] fireMap, int[] shipsLeft) {
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                System.out.printf("Player %d, enter hit row/column:\n", p%2 + 1);
+                String[] tmp = i.nextLine().split(" ");
+                int r = Integer.parseInt(tmp[0]), c = Integer.parseInt(tmp[1]);
+                if (fireMap[p % 2][r][c] == 'O' || fireMap[p % 2][r][c] == 'X') {
+                    System.out.println("You already fired on this spot. Choose different coordinates.");
+                } else if (m[(p + 1) % 2][r][c] == '@') {
+                    System.out.printf("PLAYER %d HIT PLAYER %d’s SHIP!\n", p%2 + 1, (p%2 + 1) % 2 + 1);
+                    m[(p + 1) % 2][r][c] = fireMap[p % 2][r][c] = 'X';
+                    shipsLeft[(p + 1) % 2]--;
+                    validInput = true;
+                } else {
+                    System.out.printf("PLAYER %d MISSED!\n", p%2 + 1);
+                    m[(p + 1) % 2][r][c] = fireMap[p % 2][r][c] = 'O';
+                    validInput = true;
                 }
-            }
-            return true;
-        }
-    }
-    
-    private static int[][] createMatrix(int numRow) {
-        int[][] matrix = new int[numRow][2];
-        for (int[] row : matrix) {
-            row[0] = -1;
-            row[1] = -1;
-        }
-        return matrix;
-    }
-    
-    private static int[][] ShipPositionCollector(Scanner input, int[][] matrix) {
-        for (int i = 0; i < 5; i++ ) {
-            boolean check = false;
-            while (!check) {
-                System.out.println("Enter ship "+ (i+1)+ " location:");
-                int row = checkValidInput(input);
-                int col = checkValidInput(input);
-                check = checkDuplicate(row,col,matrix);
-                if (row!=-1 && col!=-1)
-                {
-                    matrix[i][0] = row;
-                    matrix[i][1] = col;
-                }
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                System.out.println("Invalid coordinates. Choose different coordinates.");
             }
         }
-        return matrix;
-    }
-    
-    private static char[][] ShipGridMap(int[][] ShipPosition) {
-        char[][] playerGridMap = new char[5][5];
-        
-        for (char[] map : playerGridMap) {
-            for (char item : map) {
-                item = '-';
-            }
-        }
-        for (int[] ship : ShipPosition) {
-            playerGridMap[ship[0]][ship[1]] = '@';
-        }
-        return playerGridMap;
-    }
-    
-    private static void printInvalidInputMessage() {
-        System.out.println("Invalid input entered. Terminating...");
-    }
-    
-    private static int checkValidInput(Scanner input) {
-        if (input.hasNextInt()) {
-            int num = input.nextInt();
-            if (num>-1 && num<5) {
-                return num;
-            }
-        }
-        input.nextLine();
-        System.out.println("Invalid coordinates. Choose different coordinates.");
-        return -1;
-    }
-    
-    private static boolean checkDuplicate(int row, int col, int[][] matrix_ships) {
-        if ((row==-1)||(col==-1)){
-                return false;
-            }
-        for (int[] ship: matrix_ships){
-            if ((row == ship[0]) && (col == ship[1])){
-                System.out.println("You already have a ship there. Choose different coordinates.");
-                return false;
-            }
-        }
-        return true;
     }
 
     // Use this method to print game boards to the console.
-	private static void printBattleShip(char[][] player) {
-		System.out.print("  ");
-		for (int row = -1; row < 5; row++) {
-			if (row > -1) {
-				System.out.print(row + " ");
-			}
-			for (int column = 0; column < 5; column++) {
-				if (row == -1) {
-					System.out.print(column + " ");
-				} else {
-					System.out.print(player[row][column] + " ");
-				}
-			}
-			System.out.println("");
-		}
-	}
+    private static void printBattleShip(char[][] player) {
+        System.out.print("  ");
+        for (int row = -1; row < NUM_ROWS; row++) {
+            if (row > -1) {
+                System.out.print(row + " ");
+            }
+            for (int column = 0; column < NUM_COLS; column++) {
+                if (row == -1) {
+                    System.out.print(column + " ");
+                } else {
+                    System.out.print(player[row][column] + " ");
+                }
+            }
+            System.out.println("");
+        }
+    }
 }
