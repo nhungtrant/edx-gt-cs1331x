@@ -115,6 +115,10 @@ class HelloWorld {
     }
     
     private static boolean checkTargetDuplicate(int row, int col, int[][] TargetHistory) {
+        if ((row==-1)||(col==-1)){
+            System.out.println("Invalid coordinates. Choose different coordinates.");
+            return false;
+            }
         if (TargetHistory.length < 2) {
             return true;
         }
